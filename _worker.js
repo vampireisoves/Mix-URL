@@ -1,12 +1,12 @@
 
 // 部署完成后在网址后面加上这个，获取自建节点和机场聚合节点，/?token=auto或/auto或
 
-let mytoken = 'auto';
-let guestToken = ''; //可以随便取，或者uuid生成，https://1024tools.com/uuid
+let mytoken = '7Q23V6O4OaUwv7aY10';
+let guestToken = 'be2a1d8b-89a2-4ce7-a34d-b64037d3a5a1'; //可以随便取，或者uuid生成，https://1024tools.com/uuid
 let BotToken = ''; //可以为空，或者@BotFather中输入/start，/newbot，并关注机器人
 let ChatID = ''; //可以为空，或者@userinfobot中获取，/start
 let TG = 0; //小白勿动， 开发者专用，1 为推送所有的访问信息，0 为不推送订阅转换后端的访问信息与异常访问
-let FileName = 'CF-Workers-SUB';
+let FileName = 'SUB-MIX';
 let SUBUpdateTime = 6; //自定义订阅更新时间，单位小时
 let total = 99;//TB
 let timestamp = 4102329600000;//2099-12-31
@@ -18,7 +18,7 @@ https://cfxr.eu.org/getSub
 
 let urls = [];
 let subConverter = "SUBAPI.cmliussss.net"; //在线订阅转换后端，目前使用CM的订阅转换功能。支持自建psub 可自行搭建https://github.com/bulianglin/psub
-let subConfig = "https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/config/ACL4SSR_Online_MultiCountry.ini"; //订阅配置文件
+let subConfig = "https://raw.githubusercontent.com/cmliu/ACL4SSR/refs/heads/main/Clash/config/ACL4SSR_Online_Mini_MultiMode_CF.ini"; //订阅配置文件
 let subProtocol = 'https';
 
 export default {
@@ -132,7 +132,16 @@ export default {
 						const subConverterResponse = await fetch(subConverterUrl, { headers: { 'User-Agent': 'v2rayN/CF-Workers-SUB  (https://github.com/cmliu/CF-Workers-SUB)' } });
 						if (subConverterResponse.ok) {
 							const subConverterContent = await subConverterResponse.text();
-							req_data += '\n' + atob(subConverterContent);
+							// 验证是否为有效的 base64
+							if (isValidBase64(subConverterContent)) {
+								try {
+									req_data += '\n' + atob(subConverterContent);
+								} catch (e) {
+									console.log('atob 解码失败:', e.message);
+								}
+							} else {
+								console.log('订阅转换返回的不是有效的 base64 数据');
+							}
 						}
 					} catch (error) {
 						console.log('订阅转换请回base64失败，检查订阅转换后端是否正常运行');
@@ -282,9 +291,18 @@ async function sendMessage(type, ip, add_data = "") {
 }
 
 function base64Decode(str) {
-	const bytes = new Uint8Array(atob(str).split('').map(c => c.charCodeAt(0)));
-	const decoder = new TextDecoder('utf-8');
-	return decoder.decode(bytes);
+	try {
+		if (!str || !isValidBase64(str)) {
+			console.log('无效的 base64 数据');
+			return '';
+		}
+		const bytes = new Uint8Array(atob(str).split('').map(c => c.charCodeAt(0)));
+		const decoder = new TextDecoder('utf-8');
+		return decoder.decode(bytes);
+	} catch (error) {
+		console.log('base64 解码失败:', error.message);
+		return '';
+	}
 }
 
 async function MD5MD5(text) {
@@ -447,7 +465,7 @@ async function getSUB(api, request, 追加UA, userAgentHeader) {
 async function getUrl(request, targetUrl, 追加UA, userAgentHeader) {
 	// 设置自定义 User-Agent
 	const newHeaders = new Headers(request.headers);
-	newHeaders.set("User-Agent", `${atob('djJyYXlOLzYuNDU=')} cmliu/CF-Workers-SUB ${追加UA}(${userAgentHeader})`);
+	newHeaders.set("User-Agent", `v2rayN/6.45 cmliu/CF-Workers-SUB ${追加UA}(${userAgentHeader})`);
 
 	// 构建新的请求对象
 	const modifiedRequest = new Request(targetUrl, {
@@ -533,6 +551,82 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 					<meta charset="utf-8">
 					<meta name="viewport" content="width=device-width, initial-scale=1">
 					<style>
+						@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+						
+						:root {
+							/* 暗色主题（默认） */
+							--bg-primary: #0a0a0f;
+							--bg-secondary: rgba(15, 15, 25, 0.6);
+							--bg-tertiary: rgba(255, 255, 255, 0.03);
+							--bg-hover: rgba(99, 102, 241, 0.08);
+							--text-primary: #e0e0e0;
+							--text-secondary: #9ca3af;
+							--text-muted: #6b7280;
+							--border-color: rgba(255, 255, 255, 0.08);
+							--border-hover: rgba(99, 102, 241, 0.3);
+							--accent-primary: #6366f1;
+							--accent-secondary: #a855f7;
+							--accent-tertiary: #ec4899;
+							--accent-success: #10b981;
+							--accent-warning: #f59e0b;
+							--shadow-color: rgba(0, 0, 0, 0.4);
+							--shadow-hover: rgba(0, 0, 0, 0.5);
+							--gradient-1: rgba(120, 119, 198, 0.3);
+							--gradient-2: rgba(79, 70, 229, 0.2);
+							--gradient-3: rgba(139, 92, 246, 0.2);
+							--header-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+							--editor-bg: rgba(0, 0, 0, 0.4);
+							--input-bg: rgba(0, 0, 0, 0.3);
+							--warning-bg: rgba(251, 191, 36, 0.1);
+							--warning-border: rgba(251, 191, 36, 0.3);
+							--warning-text: #fbbf24;
+							--link-color: #a5b4fc;
+							--link-hover: #c7d2fe;
+							--sub-link-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+							--sub-link-hover: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%);
+							--qrcode-bg: rgba(255, 255, 255, 0.05);
+							--qrcode-hover: rgba(255, 255, 255, 0.08);
+							--qrcode-dark: #8b5cf6;
+							--qrcode-light: rgba(255, 255, 255, 0.05);
+							--btn-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+							--footer-color: #6b7280;
+							--footer-link: #a5b4fc;
+						}
+						
+						/* 亮色主题 */
+						:root[data-theme="light"] {
+							--bg-primary: #f8fafc;
+							--bg-secondary: rgba(255, 255, 255, 0.8);
+							--bg-tertiary: rgba(0, 0, 0, 0.02);
+							--bg-hover: rgba(99, 102, 241, 0.05);
+							--text-primary: #1e293b;
+							--text-secondary: #64748b;
+							--text-muted: #94a3b8;
+							--border-color: rgba(0, 0, 0, 0.08);
+							--border-hover: rgba(99, 102, 241, 0.3);
+							--shadow-color: rgba(0, 0, 0, 0.1);
+							--shadow-hover: rgba(0, 0, 0, 0.15);
+							--gradient-1: rgba(120, 119, 198, 0.15);
+							--gradient-2: rgba(79, 70, 229, 0.1);
+							--gradient-3: rgba(139, 92, 246, 0.1);
+							--header-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+							--editor-bg: rgba(255, 255, 255, 0.9);
+							--input-bg: rgba(0, 0, 0, 0.03);
+							--warning-bg: rgba(251, 191, 36, 0.1);
+							--warning-border: rgba(251, 191, 36, 0.3);
+							--warning-text: #d97706;
+							--link-color: #6366f1;
+							--link-hover: #8b5cf6;
+							--sub-link-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+							--sub-link-hover: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+							--qrcode-bg: rgba(0, 0, 0, 0.03);
+							--qrcode-hover: rgba(0, 0, 0, 0.05);
+							--qrcode-dark: #6366f1;
+							--qrcode-light: rgba(255, 255, 255, 0.9);
+							--footer-color: #64748b;
+							--footer-link: #6366f1;
+						}
+						
 						* {
 							margin: 0;
 							padding: 0;
@@ -540,72 +634,166 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 						}
 						
 						body {
-							font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+							font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 							font-size: 14px;
 							line-height: 1.6;
-							background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+							background: var(--bg-primary);
 							min-height: 100vh;
 							padding: 20px;
-							color: #333;
+							color: var(--text-primary);
+							position: relative;
+							overflow-x: hidden;
+							transition: background 0.3s ease, color 0.3s ease;
+						}
+						
+						body::before {
+							content: '';
+							position: fixed;
+							top: 0;
+							left: 0;
+							right: 0;
+							bottom: 0;
+							background: 
+								radial-gradient(ellipse 80% 50% at 50% -20%, var(--gradient-1), transparent),
+								radial-gradient(ellipse 60% 40% at 80% 60%, var(--gradient-2), transparent),
+								radial-gradient(ellipse 50% 40% at 20% 80%, var(--gradient-3), transparent);
+							pointer-events: none;
+							z-index: 0;
+							transition: background 0.3s ease;
 						}
 						
 						.container {
-							max-width: 900px;
+							max-width: 960px;
 							margin: 0 auto;
+							position: relative;
+							z-index: 1;
+						}
+						
+						.header {
+							text-align: center;
+							margin-bottom: 32px;
+							padding: 32px 0;
+							background: var(--header-bg);
+							border-radius: 24px;
+							border: 1px solid var(--border-color);
+							backdrop-filter: blur(20px);
+							transition: all 0.3s ease;
+						}
+						
+						.header h1 {
+							font-size: 28px;
+							font-weight: 700;
+							background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, var(--accent-tertiary) 100%);
+							-webkit-background-clip: text;
+							-webkit-text-fill-color: transparent;
+							background-clip: text;
+							margin-bottom: 8px;
+							letter-spacing: -0.5px;
+						}
+						
+						.header p {
+							color: var(--text-secondary);
+							font-size: 14px;
+						}
+						
+						.theme-toggle {
+							position: fixed;
+							top: 20px;
+							right: 20px;
+							z-index: 1000;
+							padding: 12px;
+							background: var(--bg-secondary);
+							border: 1px solid var(--border-color);
+							border-radius: 12px;
+							cursor: pointer;
+							color: var(--text-primary);
+							font-size: 20px;
+							transition: all 0.3s ease;
+							box-shadow: 0 4px 12px var(--shadow-color);
+							backdrop-filter: blur(10px);
+						}
+						
+						.theme-toggle:hover {
+							background: var(--bg-hover);
+							border-color: var(--border-hover);
+							transform: scale(1.05);
 						}
 						
 						.card {
-							background: rgba(255, 255, 255, 0.95);
-							backdrop-filter: blur(10px);
-							border-radius: 16px;
-							padding: 24px;
-							margin-bottom: 20px;
-							box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+							background: var(--bg-secondary);
+							backdrop-filter: blur(20px);
+							border-radius: 20px;
+							padding: 28px;
+							margin-bottom: 24px;
+							border: 1px solid var(--border-color);
+							box-shadow: 
+								0 4px 24px var(--shadow-color),
+								inset 0 1px 0 rgba(255, 255, 255, 0.05);
+							transition: all 0.3s ease;
+						}
+						
+						.card:hover {
+							border-color: var(--border-hover);
+							box-shadow: 
+								0 8px 32px var(--shadow-hover),
+								0 0 0 1px rgba(99, 102, 241, 0.1),
+								inset 0 1px 0 rgba(255, 255, 255, 0.08);
 						}
 						
 						.card-title {
-							font-size: 18px;
-							font-weight: 600;
-							color: #1a1a2e;
-							margin-bottom: 16px;
-							padding-bottom: 12px;
-							border-bottom: 2px solid #667eea;
+							font-size: 20px;
+							font-weight: 700;
+							color: var(--text-primary);
+							margin-bottom: 20px;
+							padding-bottom: 16px;
+							border-bottom: 1px solid var(--border-color);
 							display: flex;
 							align-items: center;
-							gap: 8px;
+							gap: 12px;
+							letter-spacing: -0.3px;
 						}
 						
 						.card-title::before {
 							content: '';
 							width: 4px;
-							height: 20px;
-							background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-							border-radius: 2px;
+							height: 24px;
+							background: linear-gradient(180deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+							border-radius: 3px;
+							box-shadow: 0 0 12px rgba(99, 102, 241, 0.5);
 						}
 						
 						.sub-item {
 							display: flex;
 							align-items: flex-start;
-							gap: 12px;
-							padding: 16px;
-							background: #f8f9fa;
-							border-radius: 10px;
-							margin-bottom: 12px;
-							transition: all 0.3s ease;
+							gap: 16px;
+							padding: 20px;
+							background: var(--bg-tertiary);
+							border-radius: 16px;
+							margin-bottom: 16px;
+							border: 1px solid var(--border-color);
+							transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 						}
 						
 						.sub-item:hover {
-							background: #e9ecef;
+							background: var(--bg-hover);
+							border-color: var(--border-hover);
 							transform: translateY(-2px);
-							box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+							box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
 						}
 						
 						.qrcode-wrapper {
 							flex-shrink: 0;
-							padding: 8px;
-							background: white;
-							border-radius: 8px;
-							box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+							padding: 12px;
+							background: var(--qrcode-bg);
+							border-radius: 12px;
+							border: 1px solid var(--border-color);
+							transition: all 0.3s ease;
+						}
+						
+						.qrcode-wrapper:hover {
+							background: var(--qrcode-hover);
+							border-color: var(--border-hover);
+							transform: scale(1.05);
 						}
 						
 						.sub-info {
@@ -615,84 +803,107 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 						
 						.sub-label {
 							font-size: 12px;
-							color: #6c757d;
-							margin-bottom: 6px;
-							font-weight: 500;
+							color: var(--text-secondary);
+							margin-bottom: 8px;
+							font-weight: 600;
 							text-transform: uppercase;
-							letter-spacing: 0.5px;
+							letter-spacing: 1px;
 						}
 						
 						.sub-link {
 							display: block;
-							color: #667eea;
+							color: var(--link-color);
 							text-decoration: none;
 							font-weight: 500;
 							word-break: break-all;
-							padding: 8px 12px;
-							background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-							border-radius: 6px;
+							padding: 12px 16px;
+							background: var(--sub-link-bg);
+							border-radius: 10px;
 							transition: all 0.3s ease;
 							font-size: 13px;
+							border: 1px solid rgba(99, 102, 241, 0.2);
+							font-family: 'JetBrains Mono', monospace;
 						}
 						
 						.sub-link:hover {
-							background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+							background: var(--sub-link-hover);
+							border-color: rgba(99, 102, 241, 0.4);
 							transform: translateX(4px);
+							box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 						}
 						
 						.guest-toggle {
 							display: inline-block;
-							padding: 10px 20px;
-							background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+							padding: 12px 28px;
+							background: var(--btn-gradient);
 							color: white;
 							border: none;
-							border-radius: 8px;
+							border-radius: 12px;
 							cursor: pointer;
-							font-weight: 500;
+							font-weight: 600;
+							font-size: 14px;
 							transition: all 0.3s ease;
-							margin-top: 8px;
+							margin-top: 12px;
+							box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+							letter-spacing: 0.3px;
 						}
 						
 						.guest-toggle:hover {
-							transform: translateY(-2px);
-							box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+							transform: translateY(-3px);
+							box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
 						}
 						
 						.guest-token {
 							display: inline-block;
-							padding: 4px 12px;
-							background: #fff3cd;
-							color: #856404;
-							border-radius: 4px;
-							font-size: 12px;
-							font-weight: 500;
-							margin: 8px 0;
+							padding: 8px 16px;
+							background: var(--warning-bg);
+							color: var(--warning-text);
+							border-radius: 8px;
+							font-size: 13px;
+							font-weight: 600;
+							margin: 12px 0;
+							border: 1px solid var(--warning-border);
+							font-family: 'JetBrains Mono', monospace;
 						}
 						
 						.config-info {
 							display: grid;
-							gap: 12px;
+							gap: 16px;
 						}
 						
 						.config-item {
 							display: flex;
 							flex-direction: column;
-							padding: 12px;
-							background: #f8f9fa;
-							border-radius: 8px;
+							padding: 16px;
+							background: var(--bg-tertiary);
+							border-radius: 12px;
+							border: 1px solid var(--border-color);
+							transition: all 0.3s ease;
+						}
+						
+						.config-item:hover {
+							background: var(--bg-hover);
+							border-color: var(--border-hover);
 						}
 						
 						.config-label {
 							font-size: 12px;
-							color: #6c757d;
-							margin-bottom: 6px;
-							font-weight: 500;
+							color: var(--text-secondary);
+							margin-bottom: 8px;
+							font-weight: 600;
+							text-transform: uppercase;
+							letter-spacing: 0.5px;
 						}
 						
 						.config-value {
-							color: #495057;
+							color: var(--text-primary);
 							word-break: break-all;
 							font-size: 13px;
+							font-family: 'JetBrains Mono', monospace;
+							padding: 8px 12px;
+							background: var(--input-bg);
+							border-radius: 8px;
+							border: 1px solid var(--border-color);
 						}
 						
 						.editor-container {
@@ -701,85 +912,101 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 						
 						.editor {
 							width: 100%;
-							height: 350px;
-							padding: 16px;
-							border: 2px solid #e9ecef;
-							border-radius: 10px;
+							height: 400px;
+							padding: 20px;
+							border: 2px solid var(--border-color);
+							border-radius: 16px;
 							font-size: 14px;
-							line-height: 1.6;
+							line-height: 1.8;
 							overflow-y: auto;
 							resize: vertical;
-							min-height: 200px;
-							font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-							background: #f8f9fa;
+							min-height: 250px;
+							font-family: 'JetBrains Mono', monospace;
+							background: var(--editor-bg);
+							color: var(--text-primary);
 							transition: all 0.3s ease;
 						}
 						
 						.editor:focus {
 							outline: none;
-							border-color: #667eea;
-							background: white;
-							box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+							border-color: var(--accent-primary);
+							background: var(--editor-bg);
+							box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), 0 0 24px rgba(99, 102, 241, 0.1);
+						}
+						
+						.editor::placeholder {
+							color: var(--text-muted);
 						}
 						
 						.save-container {
-							margin-top: 16px;
+							margin-top: 20px;
 							display: flex;
 							align-items: center;
-							gap: 12px;
+							gap: 16px;
 						}
 						
 						.save-btn {
-							padding: 12px 28px;
+							padding: 14px 32px;
 							color: white;
-							background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+							background: var(--btn-gradient);
 							border: none;
-							border-radius: 8px;
+							border-radius: 12px;
 							cursor: pointer;
-							font-weight: 600;
+							font-weight: 700;
 							font-size: 14px;
 							transition: all 0.3s ease;
+							box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+							letter-spacing: 0.3px;
 						}
 						
 						.save-btn:hover {
-							transform: translateY(-2px);
-							box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+							transform: translateY(-3px);
+							box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
 						}
 						
 						.save-btn:disabled {
-							opacity: 0.6;
+							opacity: 0.5;
 							cursor: not-allowed;
 							transform: none;
+							box-shadow: none;
 						}
 						
 						.save-status {
-							color: #6c757d;
+							color: var(--text-secondary);
 							font-size: 13px;
+							font-weight: 500;
 						}
 						
 						footer {
 							text-align: center;
-							padding: 16px;
-							color: rgba(255, 255, 255, 0.8);
+							padding: 24px;
+							color: var(--footer-color);
 							font-size: 13px;
+							margin-top: 24px;
 						}
 						
 						footer a {
-							color: rgba(255, 255, 255, 0.9);
+							color: var(--footer-link);
 							text-decoration: none;
 							transition: all 0.3s ease;
+							font-weight: 500;
 						}
 						
 						footer a:hover {
-							color: white;
+							color: var(--link-hover);
 							text-decoration: underline;
 						}
 						
 						.ua-info {
-							color: rgba(255, 255, 255, 0.7);
+							color: var(--footer-color);
 							font-size: 12px;
 							word-break: break-all;
-							margin-top: 8px;
+							margin-top: 12px;
+							padding: 12px;
+							background: var(--input-bg);
+							border-radius: 8px;
+							font-family: 'JetBrains Mono', monospace;
+							border: 1px solid var(--border-color);
 						}
 						
 						@media (max-width: 768px) {
@@ -787,82 +1014,213 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 								padding: 12px;
 							}
 							
+							.header {
+								padding: 24px 16px;
+								margin-bottom: 24px;
+							}
+							
+							.header h1 {
+								font-size: 24px;
+							}
+							
 							.card {
-								padding: 16px;
+								padding: 20px;
+								border-radius: 16px;
+							}
+							
+							.card-title {
+								font-size: 18px;
 							}
 							
 							.sub-item {
 								flex-direction: column;
 								align-items: center;
 								text-align: center;
+								padding: 16px;
 							}
 							
 							.qrcode-wrapper {
 								margin-bottom: 12px;
+							}
+							
+							.editor {
+								height: 300px;
+								padding: 16px;
+							}
+							
+							.save-btn {
+								padding: 12px 24px;
+							}
+						}
+						
+						/* 动画效果 */
+						@keyframes fadeIn {
+							from {
+								opacity: 0;
+								transform: translateY(20px);
+							}
+							to {
+								opacity: 1;
+								transform: translateY(0);
+							}
+						}
+						
+						.card {
+							animation: fadeIn 0.5s ease-out;
+						}
+						
+						.card:nth-child(2) {
+							animation-delay: 0.1s;
+						}
+						
+						.card:nth-child(3) {
+							animation-delay: 0.2s;
+						}
+						
+						.card:nth-child(4) {
+							animation-delay: 0.3s;
+						}
+						
+						/* 系统主题偏好设置 */
+						@media (prefers-color-scheme: dark) {
+							:root:not([data-theme="light"]) {
+								--bg-primary: #0a0a0f;
+								--bg-secondary: rgba(15, 15, 25, 0.6);
+								--bg-tertiary: rgba(255, 255, 255, 0.03);
+								--bg-hover: rgba(99, 102, 241, 0.08);
+								--text-primary: #e0e0e0;
+								--text-secondary: #9ca3af;
+								--text-muted: #6b7280;
+								--border-color: rgba(255, 255, 255, 0.08);
+								--border-hover: rgba(99, 102, 241, 0.3);
+								--shadow-color: rgba(0, 0, 0, 0.4);
+								--shadow-hover: rgba(0, 0, 0, 0.5);
+								--gradient-1: rgba(120, 119, 198, 0.3);
+								--gradient-2: rgba(79, 70, 229, 0.2);
+								--gradient-3: rgba(139, 92, 246, 0.2);
+								--header-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+								--editor-bg: rgba(0, 0, 0, 0.4);
+								--input-bg: rgba(0, 0, 0, 0.3);
+								--warning-bg: rgba(251, 191, 36, 0.1);
+								--warning-border: rgba(251, 191, 36, 0.3);
+								--warning-text: #fbbf24;
+								--link-color: #a5b4fc;
+								--link-hover: #c7d2fe;
+								--sub-link-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+								--sub-link-hover: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%);
+								--qrcode-bg: rgba(255, 255, 255, 0.05);
+								--qrcode-hover: rgba(255, 255, 255, 0.08);
+								--qrcode-dark: #8b5cf6;
+								--qrcode-light: rgba(255, 255, 255, 0.05);
+								--footer-color: #6b7280;
+								--footer-link: #a5b4fc;
+							}
+						}
+						
+						@media (prefers-color-scheme: light) {
+							:root:not([data-theme="dark"]) {
+								--bg-primary: #f8fafc;
+								--bg-secondary: rgba(255, 255, 255, 0.8);
+								--bg-tertiary: rgba(0, 0, 0, 0.02);
+								--bg-hover: rgba(99, 102, 241, 0.05);
+								--text-primary: #1e293b;
+								--text-secondary: #64748b;
+								--text-muted: #94a3b8;
+								--border-color: rgba(0, 0, 0, 0.08);
+								--border-hover: rgba(99, 102, 241, 0.3);
+								--shadow-color: rgba(0, 0, 0, 0.1);
+								--shadow-hover: rgba(0, 0, 0, 0.15);
+								--gradient-1: rgba(120, 119, 198, 0.15);
+								--gradient-2: rgba(79, 70, 229, 0.1);
+								--gradient-3: rgba(139, 92, 246, 0.1);
+								--header-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+								--editor-bg: rgba(255, 255, 255, 0.9);
+								--input-bg: rgba(0, 0, 0, 0.03);
+								--warning-bg: rgba(251, 191, 36, 0.1);
+								--warning-border: rgba(251, 191, 36, 0.3);
+								--warning-text: #d97706;
+								--link-color: #6366f1;
+								--link-hover: #8b5cf6;
+								--sub-link-bg: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(168, 85, 247, 0.08) 100%);
+								--sub-link-hover: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+								--qrcode-bg: rgba(0, 0, 0, 0.03);
+								--qrcode-hover: rgba(0, 0, 0, 0.05);
+								--qrcode-dark: #6366f1;
+								--qrcode-light: rgba(255, 255, 255, 0.9);
+								--footer-color: #64748b;
+								--footer-link: #6366f1;
 							}
 						}
 					</style>
 					<script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
 				</head>
 				<body>
+					<button class="theme-toggle" onclick="toggleTheme()" title="切换主题">🌙</button>
 					<div class="container">
+						<div class="header">
+							<h1>🚀 ${FileName}</h1>
+							<p>多格式订阅汇聚管理平台</p>
+						</div>
 						<div class="card">
 							<div class="card-title">订阅地址</div>
-							<div class="sub-item">
-								<div class="qrcode-wrapper">
-									<div id="qrcode_0"></div>
+							<button class="guest-toggle" onclick="toggleMainSubs()">查看订阅地址 ∨</button>
+							<div id="mainSubsContent" style="display: none;">
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="qrcode_0"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">自适应订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sub','qrcode_0')" class="sub-link">https://${url.hostname}/${mytoken}</a>
+									</div>
 								</div>
-								<div class="sub-info">
-									<div class="sub-label">自适应订阅</div>
-									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sub','qrcode_0')" class="sub-link">https://${url.hostname}/${mytoken}</a>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="qrcode_1"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Base64 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?b64','qrcode_1')" class="sub-link">https://${url.hostname}/${mytoken}?b64</a>
+									</div>
+								</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="qrcode_2"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Clash 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?clash','qrcode_2')" class="sub-link">https://${url.hostname}/${mytoken}?clash</a>
+									</div>
+								</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="qrcode_3"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Sing-box 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sb','qrcode_3')" class="sub-link">https://${url.hostname}/${mytoken}?sb</a>
+									</div>
+								</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="qrcode_4"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Surge 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?surge','qrcode_4')" class="sub-link">https://${url.hostname}/${mytoken}?surge</a>
+									</div>
+								</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="qrcode_5"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Loon 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?loon','qrcode_5')" class="sub-link">https://${url.hostname}/${mytoken}?loon</a>
+									</div>
 								</div>
 							</div>
-							<div class="sub-item">
-								<div class="qrcode-wrapper">
-									<div id="qrcode_1"></div>
-								</div>
-								<div class="sub-info">
-									<div class="sub-label">Base64 订阅</div>
-									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?b64','qrcode_1')" class="sub-link">https://${url.hostname}/${mytoken}?b64</a>
-								</div>
-							</div>
-							<div class="sub-item">
-								<div class="qrcode-wrapper">
-									<div id="qrcode_2"></div>
-								</div>
-								<div class="sub-info">
-									<div class="sub-label">Clash 订阅</div>
-									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?clash','qrcode_2')" class="sub-link">https://${url.hostname}/${mytoken}?clash</a>
-								</div>
-							</div>
-							<div class="sub-item">
-								<div class="qrcode-wrapper">
-									<div id="qrcode_3"></div>
-								</div>
-								<div class="sub-info">
-									<div class="sub-label">Sing-box 订阅</div>
-									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sb','qrcode_3')" class="sub-link">https://${url.hostname}/${mytoken}?sb</a>
-								</div>
-							</div>
-							<div class="sub-item">
-								<div class="qrcode-wrapper">
-									<div id="qrcode_4"></div>
-								</div>
-								<div class="sub-info">
-									<div class="sub-label">Surge 订阅</div>
-									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?surge','qrcode_4')" class="sub-link">https://${url.hostname}/${mytoken}?surge</a>
-								</div>
-							</div>
-							<div class="sub-item">
-								<div class="qrcode-wrapper">
-									<div id="qrcode_5"></div>
-								</div>
-								<div class="sub-info">
-									<div class="sub-label">Loon 订阅</div>
-									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?loon','qrcode_5')" class="sub-link">https://${url.hostname}/${mytoken}?loon</a>
-								</div>
-							</div>
-							<button class="guest-toggle" onclick="toggleNotice()">查看访客订阅 ∨</button>
+							<button class="guest-toggle" onclick="toggleNotice()" style="margin-top: 12px;">查看访客订阅 ∨</button>
 						</div>
 						
 						<div id="noticeContent" style="display: none;">
@@ -946,18 +1304,25 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 							<div class="editor-container">
 								${hasKV ? `
 								<textarea class="editor" 
-									placeholder="${decodeURIComponent(atob('TElOSyVFNyVBNCVCQSVFNCVCRSU4QiVFRiVCQyU4OCVFNCVCOCU4MCVFOCVBMSU4QyVFNCVCOCU4MCVFNCVCOCVBQSVFOCU4QSU4MiVFNyU4MiVCOSVFOSU5MyVCRSVFNiU4RSVBNSVFNSU4RCVCMyVFNSU4RiVBRiVFRiVCQyU4OSVFRiVCQyU5QQp2bGVzcyUzQSUyRiUyRjI0NmFhNzk1LTA2MzctNGY0Yy04ZjY0LTJjOGZiMjRjMWJhZCU0MDEyNy4wLjAuMSUzQTEyMzQlM0ZlbmNyeXB0aW9uJTNEbm9uZSUyNnNlY3VyaXR5JTNEdGxzJTI2c25pJTNEVEcuQ01MaXVzc3NzLmxvc2V5b3VyaXAuY29tJTI2YWxsb3dJbnNlY3VyZSUzRDElMjZ0eXBlJTNEd3MlMjZob3N0JTNEVEcuQ01MaXVzc3NzLmxvc2V5b3VyaXAuY29tJTI2cGF0aCUzRCUyNTJGJTI1M0ZlZCUyNTNEMjU2MCUyM0NGbmF0CnRyb2phbiUzQSUyRiUyRmFhNmRkZDJmLWQxY2YtNGE1Mi1iYTFiLTI2NDBjNDFhNzg1NiU0MDIxOC4xOTAuMjMwLjIwNyUzQTQxMjg4JTNGc2VjdXJpdHklM0R0bHMlMjZzbmklM0RoazEyLmJpbGliaWxpLmNvbSUyNmFsbG93SW5zZWN1cmUlM0QxJTI2dHlwZSUzRHRjcCUyNmhlYWRlclR5cGUlM0Rub25lJTIzSEsKc3MlM0ElMkYlMkZZMmhoWTJoaE1qQXRhV1YwWmkxd2IyeDVNVE13TlRveVJYUlFjVzQyU0ZscVZVNWpTRzlvVEdaVmNFWlJkMjVtYWtORFVUVnRhREZ0U21SRlRVTkNkV04xVjFvNVVERjFaR3RTUzBodVZuaDFielUxYXpGTFdIb3lSbTgyYW5KbmRERTRWelkyYjNCMGVURmxOR0p0TVdwNlprTm1RbUklMjUzRCU0MDg0LjE5LjMxLjYzJTNBNTA4NDElMjBERQoKCiVFOCVBRSVBMiVFOSU5OCU4NSVFOSU5MyVCRSVFNiU4RSVBNSVFNyVBNCVCQSVFNCVCRSU4QiVFRiVCQyU4OCVFNCVCOCU4MCVFOCVBMSU4QyVFNCVCOCU4MCVFNiU5RCVBMSVFOCVBRSVBMiVFOSU5OCU4NSVFOSU5MyVCRSVFNiU4RSVBNSVFNSU4RCVCMyVFNSU4RiVBRiVFRiVCQyU4OSVFRiVCQyU5QQpodHRwcyUzQSUyRiUyRnN1Yi54Zi5mcmVlLmhyJTJGYXV0bw=='))}"
+									placeholder="LINK 链接添加示例：
+vless://246aa795-0637-4f4c-8f64-2c8fb24c1bad@40127.0.0.1:1234?encryption=none&security=tls&sni=TG.cmliussss.loseyourip.com&allowInsecure=1&type=ws&host=TG.cmliussss.loseyourip.com&path=%2F%3Fed%3D2560#CFnat
+trojan://aa6ddd2f-d1cf-4a52-ba1b-2640c41a7856@40218.190.230.207:41288?security=tls&sni=hk12.bilibili.com&allowInsecure=1&type=tcp&headerType=none#HK
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpYbWhoZ2hjakpjaVp1YkVUZXpXZ0RyQjJWbFpUUm5TRzJwYnZKamFERTVWeWIyYjNCRmFUUm5ORlJ6VEdWVk1rOVdiRnBpUjJZMFZESlNSM1J4Y1RsblJYUmpaREprU21SaGRHTnZVMXBSZDJkNVYyRk9iMGR0Vm1kR2NFbHlaRWRhWnpaaE1XeG1hV2N6U2xSb1RtUkJjRUp3V0U1c1prcFNNbGROVXpWbVZWSnZUMHBIU1ZGRk1FZz08OD4.19.31.63:50841
+SS
+
+
+https://sub.xf.free.hr/auto"
 									id="content">${content}</textarea>
 								<div class="save-container">
-									<button class="save-btn" onclick="saveContent(this)">保存</button>
+									<button class="save-btn" onclick="saveContent(this)">💾 保存配置</button>
 									<span class="save-status" id="saveStatus"></span>
 								</div>
-								` : '<p style="color: #dc3545; padding: 12px; background: #f8d7da; border-radius: 8px; margin: 0;">请绑定 <strong>变量名称</strong> 为 <strong>KV</strong> 的KV命名空间</p>'}
+								` : '<p style="color: #fbbf24; padding: 16px; background: rgba(251, 191, 36, 0.1); border-radius: 12px; margin: 0; border: 1px solid rgba(251, 191, 36, 0.3);">⚠️ 请绑定 <strong>变量名称</strong> 为 <strong>KV</strong> 的 KV 命名空间</p>'}
 							</div>
 						</div>
 						
 						<footer>
-							${decodeURIComponent(atob('5paw5omL5by65Y+R6KeBICVFNiU4NSVCOCVFNiU4RSVBNiVFNiU4RSVBNSVFNiU4QSU4MCVFNiU5QyVBRSVFNSU4QyVCMCVFNiU4RSVBNiVFNyVCMyVCNCVFNiU4QSU4MCVFNiU4RSVBMSU3JSVCMCU3JCElM0NiclM0U='))}<br>
+							关注我 Telegram 获取更多节点！<br>
 							<a href="https://t.me/CMLiussss" target="_blank">Telegram 交流群</a><br>
 							<br>
 							<a href="https://github.com/cmliu/CF-Workers-SUB" target="_blank">GitHub Star Star Star!!!</a>
@@ -965,7 +1330,7 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 						</footer>
 					</div>
 					<script>
-					function copyToClipboard(text, qrcode) {
+function copyToClipboard(text, qrcode) {
 						navigator.clipboard.writeText(text).then(() => {
 							alert('已复制到剪贴板');
 						}).catch(err => {
@@ -973,12 +1338,18 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 						});
 						const qrcodeDiv = document.getElementById(qrcode);
 						qrcodeDiv.innerHTML = '';
+						
+						// 根据当前主题获取颜色
+						const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+						const colorDark = isDark ? '#8b5cf6' : '#6366f1';
+						const colorLight = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.9)';
+						
 						new QRCode(qrcodeDiv, {
 							text: text,
-							width: 120,
-							height: 120,
-							colorDark: "#667eea",
-							colorLight: "#ffffff",
+							width: 100,
+							height: 100,
+							colorDark: colorDark,
+							colorLight: colorLight,
 							correctLevel: QRCode.CorrectLevel.Q,
 							scale: 1
 						});
@@ -1099,9 +1470,23 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 						});
 					}
 
+					function toggleMainSubs() {
+						const mainSubsContent = document.getElementById('mainSubsContent');
+						const mainSubsButtons = document.querySelectorAll('.guest-toggle');
+						const mainSubsButton = mainSubsButtons[0];
+						if (mainSubsContent.style.display === 'none' || mainSubsContent.style.display === '') {
+							mainSubsContent.style.display = 'block';
+							mainSubsButton.textContent = '隐藏订阅地址 ∧';
+						} else {
+							mainSubsContent.style.display = 'none';
+							mainSubsButton.textContent = '查看订阅地址 ∨';
+						}
+					}
+
 					function toggleNotice() {
 						const noticeContent = document.getElementById('noticeContent');
-						const noticeToggle = document.querySelector('.guest-toggle');
+						const noticeToggleButtons = document.querySelectorAll('.guest-toggle');
+						const noticeToggle = noticeToggleButtons[1];
 						if (noticeContent.style.display === 'none' || noticeContent.style.display === '') {
 							noticeContent.style.display = 'block';
 							noticeToggle.textContent = '隐藏访客订阅 ∧';
@@ -1111,10 +1496,41 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 						}
 					}
 			
-					// 初始化 noticeContent 的 display 属性
+					// 初始化 display 属性和主题
 					document.addEventListener('DOMContentLoaded', () => {
 						document.getElementById('noticeContent').style.display = 'none';
+						document.getElementById('mainSubsContent').style.display = 'none';
+						
+						// 初始化主题
+						initTheme();
 					});
+
+					// 主题切换函数
+					function toggleTheme() {
+						const html = document.documentElement;
+						const currentTheme = html.getAttribute('data-theme');
+						const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+						html.setAttribute('data-theme', newTheme);
+						updateThemeIcon(newTheme);
+						localStorage.setItem('theme', newTheme);
+					}
+
+					// 更新主题图标
+					function updateThemeIcon(theme) {
+						const toggleBtn = document.querySelector('.theme-toggle');
+						if (toggleBtn) {
+							toggleBtn.textContent = theme === 'light' ? '🌙' : '☀️';
+						}
+					}
+
+					// 初始化主题
+					function initTheme() {
+						const savedTheme = localStorage.getItem('theme');
+						const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+						const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+						document.documentElement.setAttribute('data-theme', theme);
+						updateThemeIcon(theme);
+					}
 					</script>
 				</body>
 			</html>
