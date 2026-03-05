@@ -1,4 +1,4 @@
-# ⚙ 自建汇聚订阅 CF-Workers-SUB
+# ⚙ 订阅汇聚 Mix-URL
 
 ![订阅汇聚 Mix-URL](./sub.png)
 
