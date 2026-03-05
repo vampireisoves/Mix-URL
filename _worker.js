@@ -533,132 +533,437 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 					<meta charset="utf-8">
 					<meta name="viewport" content="width=device-width, initial-scale=1">
 					<style>
-						body {
+						* {
 							margin: 0;
-							padding: 15px; /* 调整padding */
+							padding: 0;
 							box-sizing: border-box;
-							font-size: 13px; /* 设置全局字体大小 */
 						}
-						.editor-container {
-							width: 100%;
-							max-width: 100%;
+						
+						body {
+							font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+							font-size: 14px;
+							line-height: 1.6;
+							background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+							min-height: 100vh;
+							padding: 20px;
+							color: #333;
+						}
+						
+						.container {
+							max-width: 900px;
 							margin: 0 auto;
 						}
-						.editor {
-							width: 100%;
-							height: 300px; /* 调整高度 */
-							margin: 15px 0; /* 调整margin */
-							padding: 10px; /* 调整padding */
-							box-sizing: border-box;
-							border: 1px solid #ccc;
-							border-radius: 4px;
-							font-size: 13px;
-							line-height: 1.5;
-							overflow-y: auto;
-							resize: none;
+						
+						.card {
+							background: rgba(255, 255, 255, 0.95);
+							backdrop-filter: blur(10px);
+							border-radius: 16px;
+							padding: 24px;
+							margin-bottom: 20px;
+							box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 						}
-						.save-container {
-							margin-top: 8px; /* 调整margin */
+						
+						.card-title {
+							font-size: 18px;
+							font-weight: 600;
+							color: #1a1a2e;
+							margin-bottom: 16px;
+							padding-bottom: 12px;
+							border-bottom: 2px solid #667eea;
 							display: flex;
 							align-items: center;
-							gap: 10px; /* 调整gap */
+							gap: 8px;
 						}
-						.save-btn, .back-btn {
-							padding: 6px 15px; /* 调整padding */
+						
+						.card-title::before {
+							content: '';
+							width: 4px;
+							height: 20px;
+							background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+							border-radius: 2px;
+						}
+						
+						.sub-item {
+							display: flex;
+							align-items: flex-start;
+							gap: 12px;
+							padding: 16px;
+							background: #f8f9fa;
+							border-radius: 10px;
+							margin-bottom: 12px;
+							transition: all 0.3s ease;
+						}
+						
+						.sub-item:hover {
+							background: #e9ecef;
+							transform: translateY(-2px);
+							box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+						}
+						
+						.qrcode-wrapper {
+							flex-shrink: 0;
+							padding: 8px;
+							background: white;
+							border-radius: 8px;
+							box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+						}
+						
+						.sub-info {
+							flex: 1;
+							min-width: 0;
+						}
+						
+						.sub-label {
+							font-size: 12px;
+							color: #6c757d;
+							margin-bottom: 6px;
+							font-weight: 500;
+							text-transform: uppercase;
+							letter-spacing: 0.5px;
+						}
+						
+						.sub-link {
+							display: block;
+							color: #667eea;
+							text-decoration: none;
+							font-weight: 500;
+							word-break: break-all;
+							padding: 8px 12px;
+							background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+							border-radius: 6px;
+							transition: all 0.3s ease;
+							font-size: 13px;
+						}
+						
+						.sub-link:hover {
+							background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+							transform: translateX(4px);
+						}
+						
+						.guest-toggle {
+							display: inline-block;
+							padding: 10px 20px;
+							background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 							color: white;
 							border: none;
-							border-radius: 4px;
+							border-radius: 8px;
 							cursor: pointer;
+							font-weight: 500;
+							transition: all 0.3s ease;
+							margin-top: 8px;
 						}
+						
+						.guest-toggle:hover {
+							transform: translateY(-2px);
+							box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+						}
+						
+						.guest-token {
+							display: inline-block;
+							padding: 4px 12px;
+							background: #fff3cd;
+							color: #856404;
+							border-radius: 4px;
+							font-size: 12px;
+							font-weight: 500;
+							margin: 8px 0;
+						}
+						
+						.config-info {
+							display: grid;
+							gap: 12px;
+						}
+						
+						.config-item {
+							display: flex;
+							flex-direction: column;
+							padding: 12px;
+							background: #f8f9fa;
+							border-radius: 8px;
+						}
+						
+						.config-label {
+							font-size: 12px;
+							color: #6c757d;
+							margin-bottom: 6px;
+							font-weight: 500;
+						}
+						
+						.config-value {
+							color: #495057;
+							word-break: break-all;
+							font-size: 13px;
+						}
+						
+						.editor-container {
+							width: 100%;
+						}
+						
+						.editor {
+							width: 100%;
+							height: 350px;
+							padding: 16px;
+							border: 2px solid #e9ecef;
+							border-radius: 10px;
+							font-size: 14px;
+							line-height: 1.6;
+							overflow-y: auto;
+							resize: vertical;
+							min-height: 200px;
+							font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+							background: #f8f9fa;
+							transition: all 0.3s ease;
+						}
+						
+						.editor:focus {
+							outline: none;
+							border-color: #667eea;
+							background: white;
+							box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+						}
+						
+						.save-container {
+							margin-top: 16px;
+							display: flex;
+							align-items: center;
+							gap: 12px;
+						}
+						
 						.save-btn {
-							background: #4CAF50;
+							padding: 12px 28px;
+							color: white;
+							background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+							border: none;
+							border-radius: 8px;
+							cursor: pointer;
+							font-weight: 600;
+							font-size: 14px;
+							transition: all 0.3s ease;
 						}
+						
 						.save-btn:hover {
-							background: #45a049;
+							transform: translateY(-2px);
+							box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 						}
-						.back-btn {
-							background: #666;
+						
+						.save-btn:disabled {
+							opacity: 0.6;
+							cursor: not-allowed;
+							transform: none;
 						}
-						.back-btn:hover {
-							background: #555;
-						}
+						
 						.save-status {
-							color: #666;
+							color: #6c757d;
+							font-size: 13px;
+						}
+						
+						footer {
+							text-align: center;
+							padding: 16px;
+							color: rgba(255, 255, 255, 0.8);
+							font-size: 13px;
+						}
+						
+						footer a {
+							color: rgba(255, 255, 255, 0.9);
+							text-decoration: none;
+							transition: all 0.3s ease;
+						}
+						
+						footer a:hover {
+							color: white;
+							text-decoration: underline;
+						}
+						
+						.ua-info {
+							color: rgba(255, 255, 255, 0.7);
+							font-size: 12px;
+							word-break: break-all;
+							margin-top: 8px;
+						}
+						
+						@media (max-width: 768px) {
+							body {
+								padding: 12px;
+							}
+							
+							.card {
+								padding: 16px;
+							}
+							
+							.sub-item {
+								flex-direction: column;
+								align-items: center;
+								text-align: center;
+							}
+							
+							.qrcode-wrapper {
+								margin-bottom: 12px;
+							}
 						}
 					</style>
 					<script src="https://cdn.jsdelivr.net/npm/@keeex/qrcodejs-kx@1.0.2/qrcode.min.js"></script>
 				</head>
 				<body>
-					################################################################<br>
-					Subscribe / sub 订阅地址, 点击链接自动 <strong>复制订阅链接</strong> 并 <strong>生成订阅二维码</strong> <br>
-					---------------------------------------------------------------<br>
-					自适应订阅地址:<br>
-					<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sub','qrcode_0')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/${mytoken}</a><br>
-					<div id="qrcode_0" style="margin: 10px 10px 10px 10px;"></div>
-					Base64订阅地址:<br>
-					<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?b64','qrcode_1')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/${mytoken}?b64</a><br>
-					<div id="qrcode_1" style="margin: 10px 10px 10px 10px;"></div>
-					clash订阅地址:<br>
-					<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?clash','qrcode_2')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/${mytoken}?clash</a><br>
-					<div id="qrcode_2" style="margin: 10px 10px 10px 10px;"></div>
-					singbox订阅地址:<br>
-					<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sb','qrcode_3')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/${mytoken}?sb</a><br>
-					<div id="qrcode_3" style="margin: 10px 10px 10px 10px;"></div>
-					surge订阅地址:<br>
-					<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?surge','qrcode_4')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/${mytoken}?surge</a><br>
-					<div id="qrcode_4" style="margin: 10px 10px 10px 10px;"></div>
-					loon订阅地址:<br>
-					<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?loon','qrcode_5')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/${mytoken}?loon</a><br>
-					<div id="qrcode_5" style="margin: 10px 10px 10px 10px;"></div>
-					&nbsp;&nbsp;<strong><a href="javascript:void(0);" id="noticeToggle" onclick="toggleNotice()">查看访客订阅∨</a></strong><br>
-					<div id="noticeContent" class="notice-content" style="display: none;">
-						---------------------------------------------------------------<br>
-						访客订阅只能使用订阅功能，无法查看配置页！<br>
-						GUEST（访客订阅TOKEN）: <strong>${guest}</strong><br>
-						---------------------------------------------------------------<br>
-						自适应订阅地址:<br>
-						<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}','guest_0')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}</a><br>
-						<div id="guest_0" style="margin: 10px 10px 10px 10px;"></div>
-						Base64订阅地址:<br>
-						<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&b64','guest_1')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&b64</a><br>
-						<div id="guest_1" style="margin: 10px 10px 10px 10px;"></div>
-						clash订阅地址:<br>
-						<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&clash','guest_2')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&clash</a><br>
-						<div id="guest_2" style="margin: 10px 10px 10px 10px;"></div>
-						singbox订阅地址:<br>
-						<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&sb','guest_3')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&sb</a><br>
-						<div id="guest_3" style="margin: 10px 10px 10px 10px;"></div>
-						surge订阅地址:<br>
-						<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&surge','guest_4')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&surge</a><br>
-						<div id="guest_4" style="margin: 10px 10px 10px 10px;"></div>
-						loon订阅地址:<br>
-						<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&loon','guest_5')" style="color:blue;text-decoration:underline;cursor:pointer;">https://${url.hostname}/sub?token=${guest}&loon</a><br>
-						<div id="guest_5" style="margin: 10px 10px 10px 10px;"></div>
-					</div>
-					---------------------------------------------------------------<br>
-					################################################################<br>
-					订阅转换配置<br>
-					---------------------------------------------------------------<br>
-					SUBAPI（订阅转换后端）: <strong>${subProtocol}://${subConverter}</strong><br>
-					SUBCONFIG（订阅转换配置文件）: <strong>${subConfig}</strong><br>
-					---------------------------------------------------------------<br>
-					################################################################<br>
-					${FileName} 汇聚订阅编辑: 
-					<div class="editor-container">
-						${hasKV ? `
-						<textarea class="editor" 
-							placeholder="${decodeURIComponent(atob('TElOSyVFNyVBNCVCQSVFNCVCRSU4QiVFRiVCQyU4OCVFNCVCOCU4MCVFOCVBMSU4QyVFNCVCOCU4MCVFNCVCOCVBQSVFOCU4QSU4MiVFNyU4MiVCOSVFOSU5MyVCRSVFNiU4RSVBNSVFNSU4RCVCMyVFNSU4RiVBRiVFRiVCQyU4OSVFRiVCQyU5QQp2bGVzcyUzQSUyRiUyRjI0NmFhNzk1LTA2MzctNGY0Yy04ZjY0LTJjOGZiMjRjMWJhZCU0MDEyNy4wLjAuMSUzQTEyMzQlM0ZlbmNyeXB0aW9uJTNEbm9uZSUyNnNlY3VyaXR5JTNEdGxzJTI2c25pJTNEVEcuQ01MaXVzc3NzLmxvc2V5b3VyaXAuY29tJTI2YWxsb3dJbnNlY3VyZSUzRDElMjZ0eXBlJTNEd3MlMjZob3N0JTNEVEcuQ01MaXVzc3NzLmxvc2V5b3VyaXAuY29tJTI2cGF0aCUzRCUyNTJGJTI1M0ZlZCUyNTNEMjU2MCUyM0NGbmF0CnRyb2phbiUzQSUyRiUyRmFhNmRkZDJmLWQxY2YtNGE1Mi1iYTFiLTI2NDBjNDFhNzg1NiU0MDIxOC4xOTAuMjMwLjIwNyUzQTQxMjg4JTNGc2VjdXJpdHklM0R0bHMlMjZzbmklM0RoazEyLmJpbGliaWxpLmNvbSUyNmFsbG93SW5zZWN1cmUlM0QxJTI2dHlwZSUzRHRjcCUyNmhlYWRlclR5cGUlM0Rub25lJTIzSEsKc3MlM0ElMkYlMkZZMmhoWTJoaE1qQXRhV1YwWmkxd2IyeDVNVE13TlRveVJYUlFjVzQyU0ZscVZVNWpTRzlvVEdaVmNFWlJkMjVtYWtORFVUVnRhREZ0U21SRlRVTkNkV04xVjFvNVVERjFaR3RTUzBodVZuaDFielUxYXpGTFdIb3lSbTgyYW5KbmRERTRWelkyYjNCMGVURmxOR0p0TVdwNlprTm1RbUklMjUzRCU0MDg0LjE5LjMxLjYzJTNBNTA4NDElMjNERQoKCiVFOCVBRSVBMiVFOSU5OCU4NSVFOSU5MyVCRSVFNiU4RSVBNSVFNyVBNCVCQSVFNCVCRSU4QiVFRiVCQyU4OCVFNCVCOCU4MCVFOCVBMSU4QyVFNCVCOCU4MCVFNiU5RCVBMSVFOCVBRSVBMiVFOSU5OCU4NSVFOSU5MyVCRSVFNiU4RSVBNSVFNSU4RCVCMyVFNSU4RiVBRiVFRiVCQyU4OSVFRiVCQyU5QQpodHRwcyUzQSUyRiUyRnN1Yi54Zi5mcmVlLmhyJTJGYXV0bw=='))}"
-							id="content">${content}</textarea>
-						<div class="save-container">
-							<button class="save-btn" onclick="saveContent(this)">保存</button>
-							<span class="save-status" id="saveStatus"></span>
+					<div class="container">
+						<div class="card">
+							<div class="card-title">订阅地址</div>
+							<div class="sub-item">
+								<div class="qrcode-wrapper">
+									<div id="qrcode_0"></div>
+								</div>
+								<div class="sub-info">
+									<div class="sub-label">自适应订阅</div>
+									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sub','qrcode_0')" class="sub-link">https://${url.hostname}/${mytoken}</a>
+								</div>
+							</div>
+							<div class="sub-item">
+								<div class="qrcode-wrapper">
+									<div id="qrcode_1"></div>
+								</div>
+								<div class="sub-info">
+									<div class="sub-label">Base64 订阅</div>
+									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?b64','qrcode_1')" class="sub-link">https://${url.hostname}/${mytoken}?b64</a>
+								</div>
+							</div>
+							<div class="sub-item">
+								<div class="qrcode-wrapper">
+									<div id="qrcode_2"></div>
+								</div>
+								<div class="sub-info">
+									<div class="sub-label">Clash 订阅</div>
+									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?clash','qrcode_2')" class="sub-link">https://${url.hostname}/${mytoken}?clash</a>
+								</div>
+							</div>
+							<div class="sub-item">
+								<div class="qrcode-wrapper">
+									<div id="qrcode_3"></div>
+								</div>
+								<div class="sub-info">
+									<div class="sub-label">Sing-box 订阅</div>
+									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?sb','qrcode_3')" class="sub-link">https://${url.hostname}/${mytoken}?sb</a>
+								</div>
+							</div>
+							<div class="sub-item">
+								<div class="qrcode-wrapper">
+									<div id="qrcode_4"></div>
+								</div>
+								<div class="sub-info">
+									<div class="sub-label">Surge 订阅</div>
+									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?surge','qrcode_4')" class="sub-link">https://${url.hostname}/${mytoken}?surge</a>
+								</div>
+							</div>
+							<div class="sub-item">
+								<div class="qrcode-wrapper">
+									<div id="qrcode_5"></div>
+								</div>
+								<div class="sub-info">
+									<div class="sub-label">Loon 订阅</div>
+									<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/${mytoken}?loon','qrcode_5')" class="sub-link">https://${url.hostname}/${mytoken}?loon</a>
+								</div>
+							</div>
+							<button class="guest-toggle" onclick="toggleNotice()">查看访客订阅 ∨</button>
 						</div>
-						` : '<p>请绑定 <strong>变量名称</strong> 为 <strong>KV</strong> 的KV命名空间</p>'}
+						
+						<div id="noticeContent" style="display: none;">
+							<div class="card">
+								<div class="card-title">访客订阅</div>
+								<p style="color: #6c757d; margin-bottom: 12px; font-size: 13px;">访客订阅只能使用订阅功能，无法查看配置页！</p>
+								<div class="guest-token">GUEST TOKEN: ${guest}</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="guest_0"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">自适应订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}','guest_0')" class="sub-link">https://${url.hostname}/sub?token=${guest}</a>
+									</div>
+								</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="guest_1"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Base64 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&b64','guest_1')" class="sub-link">https://${url.hostname}/sub?token=${guest}&b64</a>
+									</div>
+								</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="guest_2"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Clash 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&clash','guest_2')" class="sub-link">https://${url.hostname}/sub?token=${guest}&clash</a>
+									</div>
+								</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="guest_3"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Sing-box 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&sb','guest_3')" class="sub-link">https://${url.hostname}/sub?token=${guest}&sb</a>
+									</div>
+								</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="guest_4"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Surge 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&surge','guest_4')" class="sub-link">https://${url.hostname}/sub?token=${guest}&surge</a>
+									</div>
+								</div>
+								<div class="sub-item">
+									<div class="qrcode-wrapper">
+										<div id="guest_5"></div>
+									</div>
+									<div class="sub-info">
+										<div class="sub-label">Loon 订阅</div>
+										<a href="javascript:void(0)" onclick="copyToClipboard('https://${url.hostname}/sub?token=${guest}&loon','guest_5')" class="sub-link">https://${url.hostname}/sub?token=${guest}&loon</a>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="card">
+							<div class="card-title">订阅转换配置</div>
+							<div class="config-info">
+								<div class="config-item">
+									<div class="config-label">SUBAPI（订阅转换后端）</div>
+									<div class="config-value">${subProtocol}://${subConverter}</div>
+								</div>
+								<div class="config-item">
+									<div class="config-label">SUBCONFIG（订阅转换配置文件）</div>
+									<div class="config-value">${subConfig}</div>
+								</div>
+							</div>
+						</div>
+						
+						<div class="card">
+							<div class="card-title">${FileName} 汇聚订阅编辑</div>
+							<div class="editor-container">
+								${hasKV ? `
+								<textarea class="editor" 
+									placeholder="${decodeURIComponent(atob('TElOSyVFNyVBNCVCQSVFNCVCRSU4QiVFRiVCQyU4OCVFNCVCOCU4MCVFOCVBMSU4QyVFNCVCOCU4MCVFNCVCOCVBQSVFOCU4QSU4MiVFNyU4MiVCOSVFOSU5MyVCRSVFNiU4RSVBNSVFNSU4RCVCMyVFNSU4RiVBRiVFRiVCQyU4OSVFRiVCQyU5QQp2bGVzcyUzQSUyRiUyRjI0NmFhNzk1LTA2MzctNGY0Yy04ZjY0LTJjOGZiMjRjMWJhZCU0MDEyNy4wLjAuMSUzQTEyMzQlM0ZlbmNyeXB0aW9uJTNEbm9uZSUyNnNlY3VyaXR5JTNEdGxzJTI2c25pJTNEVEcuQ01MaXVzc3NzLmxvc2V5b3VyaXAuY29tJTI2YWxsb3dJbnNlY3VyZSUzRDElMjZ0eXBlJTNEd3MlMjZob3N0JTNEVEcuQ01MaXVzc3NzLmxvc2V5b3VyaXAuY29tJTI2cGF0aCUzRCUyNTJGJTI1M0ZlZCUyNTNEMjU2MCUyM0NGbmF0CnRyb2phbiUzQSUyRiUyRmFhNmRkZDJmLWQxY2YtNGE1Mi1iYTFiLTI2NDBjNDFhNzg1NiU0MDIxOC4xOTAuMjMwLjIwNyUzQTQxMjg4JTNGc2VjdXJpdHklM0R0bHMlMjZzbmklM0RoazEyLmJpbGliaWxpLmNvbSUyNmFsbG93SW5zZWN1cmUlM0QxJTI2dHlwZSUzRHRjcCUyNmhlYWRlclR5cGUlM0Rub25lJTIzSEsKc3MlM0ElMkYlMkZZMmhoWTJoaE1qQXRhV1YwWmkxd2IyeDVNVE13TlRveVJYUlFjVzQyU0ZscVZVNWpTRzlvVEdaVmNFWlJkMjVtYWtORFVUVnRhREZ0U21SRlRVTkNkV04xVjFvNVVERjFaR3RTUzBodVZuaDFielUxYXpGTFdIb3lSbTgyYW5KbmRERTRWelkyYjNCMGVURmxOR0p0TVdwNlprTm1RbUklMjUzRCU0MDg0LjE5LjMxLjYzJTNBNTA4NDElMjBERQoKCiVFOCVBRSVBMiVFOSU5OCU4NSVFOSU5MyVCRSVFNiU4RSVBNSVFNyVBNCVCQSVFNCVCRSU4QiVFRiVCQyU4OCVFNCVCOCU4MCVFOCVBMSU4QyVFNCVCOCU4MCVFNiU5RCVBMSVFOCVBRSVBMiVFOSU5OCU4NSVFOSU5MyVCRSVFNiU4RSVBNSVFNSU4RCVCMyVFNSU4RiVBRiVFRiVCQyU4OSVFRiVCQyU5QQpodHRwcyUzQSUyRiUyRnN1Yi54Zi5mcmVlLmhyJTJGYXV0bw=='))}"
+									id="content">${content}</textarea>
+								<div class="save-container">
+									<button class="save-btn" onclick="saveContent(this)">保存</button>
+									<span class="save-status" id="saveStatus"></span>
+								</div>
+								` : '<p style="color: #dc3545; padding: 12px; background: #f8d7da; border-radius: 8px; margin: 0;">请绑定 <strong>变量名称</strong> 为 <strong>KV</strong> 的KV命名空间</p>'}
+							</div>
+						</div>
+						
+						<footer>
+							${decodeURIComponent(atob('5paw5omL5by65Y+R6KeBICVFNiU4NSVCOCVFNiU4RSVBNiVFNiU4RSVBNSVFNiU4QSU4MCVFNiU5QyVBRSVFNSU4QyVCMCVFNiU4RSVBNiVFNyVCMyVCNCVFNiU4QSU4MCVFNiU4RSVBMSU3JSVCMCU3JCElM0NiclM0U='))}<br>
+							<a href="https://t.me/CMLiussss" target="_blank">Telegram 交流群</a><br>
+							<br>
+							<a href="https://github.com/cmliu/CF-Workers-SUB" target="_blank">GitHub Star Star Star!!!</a>
+							<div class="ua-info">UA: ${request.headers.get('User-Agent')}</div>
+						</footer>
 					</div>
-					<br>
-					################################################################<br>
-					${decodeURIComponent(atob('dGVsZWdyYW0lMjAlRTQlQkElQTQlRTYlQjUlODElRTclQkUlQTQlMjAlRTYlOEElODAlRTYlOUMlQUYlRTUlQTQlQTclRTQlQkQlQUMlN0UlRTUlOUMlQTglRTclQkElQkYlRTUlOEYlOTElRTclODklOEMhJTNDYnIlM0UKJTNDYSUyMGhyZWYlM0QlMjdodHRwcyUzQSUyRiUyRnQubWUlMkZDTUxpdXNzc3MlMjclM0VodHRwcyUzQSUyRiUyRnQubWUlMkZDTUxpdXNzc3MlM0MlMkZhJTNFJTNDYnIlM0UKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tJTNDYnIlM0UKZ2l0aHViJTIwJUU5JUExJUI5JUU3JTlCJUFFJUU1JTlDJUIwJUU1JTlEJTgwJTIwU3RhciFTdGFyIVN0YXIhISElM0NiciUzRQolM0NhJTIwaHJlZiUzRCUyN2h0dHBzJTNBJTJGJTJGZ2l0aHViLmNvbSUyRmNtbGl1JTJGQ0YtV29ya2Vycy1TVUIlMjclM0VodHRwcyUzQSUyRiUyRmdpdGh1Yi5jb20lMkZjbWxpdSUyRkNGLVdvcmtlcnMtU1VCJTNDJTJGYSUzRSUzQ2JyJTNFCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSUzQ2JyJTNFCiUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMyUyMw=='))}
-					<br><br>UA: <strong>${request.headers.get('User-Agent')}</strong>
 					<script>
 					function copyToClipboard(text, qrcode) {
 						navigator.clipboard.writeText(text).then(() => {
@@ -670,12 +975,12 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 						qrcodeDiv.innerHTML = '';
 						new QRCode(qrcodeDiv, {
 							text: text,
-							width: 220, // 调整宽度
-							height: 220, // 调整高度
-							colorDark: "#000000", // 二维码颜色
-							colorLight: "#ffffff", // 背景颜色
-							correctLevel: QRCode.CorrectLevel.Q, // 设置纠错级别
-							scale: 1 // 调整像素颗粒度
+							width: 120,
+							height: 120,
+							colorDark: "#667eea",
+							colorLight: "#ffffff",
+							correctLevel: QRCode.CorrectLevel.Q,
+							scale: 1
 						});
 					}
 						
@@ -796,13 +1101,13 @@ async function KV(request, env, txt = 'ADD.txt', guest) {
 
 					function toggleNotice() {
 						const noticeContent = document.getElementById('noticeContent');
-						const noticeToggle = document.getElementById('noticeToggle');
+						const noticeToggle = document.querySelector('.guest-toggle');
 						if (noticeContent.style.display === 'none' || noticeContent.style.display === '') {
 							noticeContent.style.display = 'block';
-							noticeToggle.textContent = '隐藏访客订阅∧';
+							noticeToggle.textContent = '隐藏访客订阅 ∧';
 						} else {
 							noticeContent.style.display = 'none';
-							noticeToggle.textContent = '查看访客订阅∨';
+							noticeToggle.textContent = '查看访客订阅 ∨';
 						}
 					}
 			
